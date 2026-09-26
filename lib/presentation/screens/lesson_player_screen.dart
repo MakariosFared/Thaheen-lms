@@ -344,7 +344,7 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
                                 IconButton(
                                   iconSize: 32,
                                   color: Colors.white,
-                                  icon: const Icon(Icons.replay_10_rounded),
+                                  icon: const Icon(Icons.forward_10_rounded),
                                   onPressed: () {
                                     if (_controller != null) {
                                       final newPos = _controller!.value.position - const Duration(seconds: 10);
@@ -367,7 +367,7 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
                                 IconButton(
                                   iconSize: 32,
                                   color: Colors.white,
-                                  icon: const Icon(Icons.forward_10_rounded),
+                                  icon: const Icon(Icons.replay_10_rounded),
                                   onPressed: () {
                                     if (_controller != null) {
                                       final newPos = _controller!.value.position + const Duration(seconds: 10);
