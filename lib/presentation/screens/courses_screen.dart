@@ -40,15 +40,24 @@ class _CoursesScreenState extends State<CoursesScreen> {
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Icons.local_hospital_rounded,
-                color: AppColors.primary,
-                size: 20,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'assets/images/app_logo.png',
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.local_hospital_rounded,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),

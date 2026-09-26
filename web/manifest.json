@@ -1,11 +1,11 @@
 {
-    "name": "thaheen_lms",
-    "short_name": "thaheen_lms",
+    "name": "ذهين - منصة التعليم الطبي",
+    "short_name": "ذهين",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0D9488",
+    "theme_color": "#0D9488",
+    "description": "منصة تعليمية ذكية لطلاب العلوم الطبية والتمريض",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
