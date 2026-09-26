@@ -31,6 +31,7 @@ class CoursesCubit extends Cubit<CoursesState> {
       final courseItems = courses.map((course) {
         final lessons = course.allLessons;
         int completedCount = 0;
+        final lessonRatios = <double>[];
 
         for (final lesson in lessons) {
           final progress = allProgress[lesson.id];
@@ -41,12 +42,21 @@ class CoursesCubit extends Cubit<CoursesState> {
               );
           if (isCompleted) {
             completedCount++;
+            lessonRatios.add(1.0);
+          } else if (progress != null &&
+              progress.lastPositionSec > 0 &&
+              lesson.durationSec > 0) {
+            final ratio = (progress.lastPositionSec / lesson.durationSec)
+                .clamp(0.0, 1.0);
+            lessonRatios.add(ratio);
+          } else {
+            lessonRatios.add(0.0);
           }
         }
 
-        final percent = ProgressCalculator.calculateCourseProgressPercent(
+        final percent = ProgressCalculator.calculateWeightedCourseProgress(
           totalLessons: lessons.length,
-          completedLessonsCount: completedCount,
+          lessonRatios: lessonRatios,
         );
 
         return CourseItemViewData(

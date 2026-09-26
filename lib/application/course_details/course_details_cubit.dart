@@ -42,6 +42,7 @@ class CourseDetailsCubit extends Cubit<CourseDetailsState> {
       final totalLessonsCount = course.allLessons.length;
 
       final sectionViewDataList = <SectionItemViewData>[];
+      final lessonRatios = <double>[];
 
       for (final section in course.sections) {
         final lessonViewDataList = <LessonItemViewData>[];
@@ -62,6 +63,15 @@ class CourseDetailsCubit extends Cubit<CourseDetailsState> {
           final isThisCompleted = status == LessonStatus.completed;
           if (isThisCompleted) {
             completedLessonsCount++;
+            lessonRatios.add(1.0);
+          } else if (progress != null &&
+              progress.lastPositionSec > 0 &&
+              lesson.durationSec > 0) {
+            final ratio = (progress.lastPositionSec / lesson.durationSec)
+                .clamp(0.0, 1.0);
+            lessonRatios.add(ratio);
+          } else {
+            lessonRatios.add(0.0);
           }
 
           lessonViewDataList.add(LessonItemViewData(
@@ -83,9 +93,9 @@ class CourseDetailsCubit extends Cubit<CourseDetailsState> {
         ));
       }
 
-      final percent = ProgressCalculator.calculateCourseProgressPercent(
+      final percent = ProgressCalculator.calculateWeightedCourseProgress(
         totalLessons: totalLessonsCount,
-        completedLessonsCount: completedLessonsCount,
+        lessonRatios: lessonRatios,
       );
 
       emit(CourseDetailsLoaded(

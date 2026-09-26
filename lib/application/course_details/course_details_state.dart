@@ -19,6 +19,14 @@ class LessonItemViewData extends Equatable {
     this.progress,
   });
 
+  double get watchedFraction {
+    if (status == LessonStatus.completed) return 1.0;
+    if (progress == null || lesson.durationSec <= 0) return 0.0;
+    return (progress!.lastPositionSec / lesson.durationSec).clamp(0.0, 1.0);
+  }
+
+  double get watchedPercent => (watchedFraction * 100).clamp(0.0, 100.0);
+
   @override
   List<Object?> get props => [
         lesson,

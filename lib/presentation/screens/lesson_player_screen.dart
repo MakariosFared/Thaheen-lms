@@ -227,14 +227,39 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
     });
   }
 
+  Future<void> _saveCurrentProgressOnExit() async {
+    final cubit = context.read<LessonPlayerCubit>();
+    if (_controller != null && _controller!.value.isInitialized) {
+      final pos = _controller!.value.position.inSeconds;
+      final dur = _controller!.value.duration.inSeconds;
+      await cubit.onPositionChanged(pos, dur);
+    }
+    if (_noteController.text.isNotEmpty) {
+      await cubit.saveNote(_noteController.text);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: _isFullscreen ? Colors.black : theme.scaffoldBackgroundColor,
-      body: BlocConsumer<LessonPlayerCubit, LessonPlayerState>(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (_isFullscreen) {
+          _toggleFullscreen();
+        } else {
+          await _saveCurrentProgressOnExit();
+          if (context.mounted) {
+            context.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: _isFullscreen ? Colors.black : theme.scaffoldBackgroundColor,
+        body: BlocConsumer<LessonPlayerCubit, LessonPlayerState>(
         listener: (context, state) {
           if (state.status == PlayerStatus.ready && !_isControllerInitialized && !_hasVideoError) {
             _setupController(state);
@@ -324,11 +349,14 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
                                     Icons.arrow_back_ios_new_rounded,
                                     color: Colors.white,
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_isFullscreen) {
                                       _toggleFullscreen();
                                     } else {
-                                      context.pop();
+                                      await _saveCurrentProgressOnExit();
+                                      if (context.mounted) {
+                                        context.pop();
+                                      }
                                     }
                                   },
                                 ),
@@ -744,6 +772,7 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }

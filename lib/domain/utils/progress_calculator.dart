@@ -43,6 +43,22 @@ class ProgressCalculator {
     return (completedLessonsCount / totalLessons) * 100.0;
   }
 
+  // Calculates real-time weighted course progress percentage taking partial lesson progress into account.
+  static double calculateWeightedCourseProgress({
+    required int totalLessons,
+    required List<double> lessonRatios,
+  }) {
+    if (totalLessons <= 0 || lessonRatios.isEmpty) {
+      return 0.0;
+    }
+    final sum = lessonRatios.fold<double>(
+      0.0,
+      (prev, element) => prev + element.clamp(0.0, 1.0),
+    );
+    final percent = (sum / totalLessons) * 100.0;
+    return percent.clamp(0.0, 100.0);
+  }
+
   // Determines the status of a specific lesson.
   static LessonStatus getLessonStatus({
     required bool isUnlocked,

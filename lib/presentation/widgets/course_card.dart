@@ -141,14 +141,18 @@ class CourseCard extends StatelessWidget {
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        course.instructor,
-                        style: TextStyle(
-                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                          fontSize: 13,
+                      Expanded(
+                        child: Text(
+                          course.instructor,
+                          style: TextStyle(
+                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            fontSize: 13,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 8),
                       Icon(
                         Icons.play_lesson_outlined,
                         size: 16,

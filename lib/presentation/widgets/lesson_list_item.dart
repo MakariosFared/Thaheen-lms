@@ -129,40 +129,60 @@ class LessonListItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 2,
                         children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 13,
-                            color: isDark
-                                ? AppColors.textSecondaryDark
-                                : AppColors.textSecondaryLight,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatDuration(lesson.durationSec),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark
-                                  ? AppColors.textSecondaryDark
-                                  : AppColors.textSecondaryLight,
-                            ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.access_time_rounded,
+                                size: 13,
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondaryLight,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _formatDuration(lesson.durationSec),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark
+                                      ? AppColors.textSecondaryDark
+                                      : AppColors.textSecondaryLight,
+                                ),
+                              ),
+                            ],
                           ),
                           if (item.progress != null &&
                               item.progress!.lastPositionSec > 0 &&
-                              status == LessonStatus.inProgress) ...[
-                            const SizedBox(width: 8),
+                              status == LessonStatus.inProgress)
                             Text(
-                              '• تم مشاهدة ${_formatDuration(item.progress!.lastPositionSec)}',
+                              '• تم مشاهدة ${_formatDuration(item.progress!.lastPositionSec)} (${item.watchedPercent.toStringAsFixed(0)}%)',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: isDark ? AppColors.warning : const Color(0xFFD97706),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ],
                         ],
                       ),
+                      if (status == LessonStatus.inProgress && item.watchedFraction > 0) ...[
+                        const SizedBox(height: 6),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: LinearProgressIndicator(
+                            value: item.watchedFraction,
+                            minHeight: 4,
+                            backgroundColor: isDark
+                                ? AppColors.surfaceVariantDark
+                                : AppColors.surfaceVariantLight,
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.warning),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
