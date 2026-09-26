@@ -1,0 +1,100 @@
+{
+  "courses": [
+    {
+      "id": "anatomy-101",
+      "title": "مقدمة في علم التشريح الطبي",
+      "instructor": "د. سارة المنصوري",
+      "description": "دورة تأسيسية لطلاب العلوم الطبية والتمريض تغطي تشريح الجهاز الهيكلي والعضلي بدقة وفهم سريري.",
+      "thumbnail": "assets/images/anatomy.png",
+      "sections": [
+        {
+          "id": "sec-anat-1",
+          "title": "الجهاز الهيكلي والمفاصل",
+          "lessons": [
+            {
+              "id": "les-anat-101",
+              "title": "مقدمة عامة في بنية العظام والمفاصل",
+              "durationSec": 78,
+              "video": "assets/videos/lesson1.mp4"
+            },
+            {
+              "id": "les-anat-102",
+              "title": "تشريح العمود الفقري والقفص الصدري",
+              "durationSec": 44,
+              "video": "assets/videos/lesson2.mp4"
+            },
+            {
+              "id": "les-anat-103",
+              "title": "عظام الأطراف العلوية والسفلية",
+              "durationSec": 31,
+              "video": "assets/videos/lesson3.mp4"
+            }
+          ]
+        },
+        {
+          "id": "sec-anat-2",
+          "title": "الجهاز العضلي والحركة",
+          "lessons": [
+            {
+              "id": "les-anat-201",
+              "title": "أنواع الأنسجة العضلية وآلية الانقباض",
+              "durationSec": 78,
+              "video": "assets/videos/lesson1.mp4"
+            },
+            {
+              "id": "les-anat-202",
+              "title": "عضلات الجذع والأطراف ووظائفها",
+              "durationSec": 44,
+              "video": "assets/videos/lesson2.mp4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "physiology-201",
+      "title": "علم وظائف الأعضاء (الفسيولوجيا السريرية)",
+      "instructor": "د. أحمد خليل",
+      "description": "استكشاف آليات عمل الأجهزة الحيوية بجسم الإنسان، والتركيز على التوازن الداخلي وتدفق السوائل.",
+      "thumbnail": "assets/images/physiology.png",
+      "sections": [
+        {
+          "id": "sec-phys-1",
+          "title": "الفسيولوجيا القلبية الوعائية",
+          "lessons": [
+            {
+              "id": "les-phys-101",
+              "title": "ديناميكا الدورة الدموية وضغط الدم",
+              "durationSec": 31,
+              "video": "assets/videos/lesson3.mp4"
+            },
+            {
+              "id": "les-phys-102",
+              "title": "النظام الكهربائي للقلب وتخطيط ECG",
+              "durationSec": 78,
+              "video": "assets/videos/lesson1.mp4"
+            }
+          ]
+        },
+        {
+          "id": "sec-phys-2",
+          "title": "فسيولوجيا الجهاز التنفسي",
+          "lessons": [
+            {
+              "id": "les-phys-201",
+              "title": "ميكانيكا التنفس وتبادل الغازات السنخي",
+              "durationSec": 44,
+              "video": "assets/videos/lesson2.mp4"
+            },
+            {
+              "id": "les-phys-202",
+              "title": "التحكم العصبي والكيميائي في التنفس",
+              "durationSec": 31,
+              "video": "assets/videos/lesson3.mp4"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
