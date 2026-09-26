@@ -20,6 +20,8 @@ abstract class IProgressRepository {
   Future<LessonProgress?> getLatestInProgressLesson();
   Future<double> getLastPlaybackSpeed();
   Future<void> saveLastPlaybackSpeed(double speed);
+  Future<bool> getIsDarkMode();
+  Future<void> saveIsDarkMode(bool isDark);
   Future<void> clearAll();
 }
 
@@ -27,6 +29,7 @@ class ProgressRepository implements IProgressRepository {
   static const String progressBoxName = 'lesson_progress_box';
   static const String settingsBoxName = 'app_settings_box';
   static const String keyLastPlaybackSpeed = 'last_playback_speed';
+  static const String keyIsDarkMode = 'is_dark_mode';
 
   Box<String>? _progressBox;
   Box<dynamic>? _settingsBox;
@@ -155,6 +158,20 @@ class ProgressRepository implements IProgressRepository {
   @override
   Future<void> saveLastPlaybackSpeed(double speed) async {
     await settingsBox.put(keyLastPlaybackSpeed, speed);
+  }
+
+  @override
+  Future<bool> getIsDarkMode() async {
+    final isDark = settingsBox.get(keyIsDarkMode, defaultValue: false);
+    if (isDark is bool) {
+      return isDark;
+    }
+    return false;
+  }
+
+  @override
+  Future<void> saveIsDarkMode(bool isDark) async {
+    await settingsBox.put(keyIsDarkMode, isDark);
   }
 
   @override
