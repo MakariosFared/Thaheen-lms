@@ -38,9 +38,10 @@ class LessonPlayerCubit extends Cubit<LessonPlayerState> {
         nextLesson = allLessons[currentIndex + 1];
       }
 
-      // Load progress and saved speed
+      // Load progress, saved speed, and notes
       final progress = await progressRepository.getLessonProgress(lessonId);
       final lastSpeed = await progressRepository.getLastPlaybackSpeed();
+      final savedNote = await progressRepository.getLessonNote(lessonId) ?? '';
 
       final isAlreadyCompleted = progress?.isCompleted ??
           ProgressCalculator.isLessonCompleted(
@@ -62,6 +63,7 @@ class LessonPlayerCubit extends Cubit<LessonPlayerState> {
         playbackSpeed: lastSpeed,
         isCompleted: isAlreadyCompleted,
         isNextLessonUnlocked: isAlreadyCompleted,
+        note: savedNote,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -69,6 +71,12 @@ class LessonPlayerCubit extends Cubit<LessonPlayerState> {
         errorMessage: 'تعذر تحميل بيانات المشغل: ${e.toString()}',
       ));
     }
+  }
+
+  Future<void> saveNote(String note) async {
+    if (state.lesson == null) return;
+    emit(state.copyWith(note: note));
+    await progressRepository.saveLessonNote(state.lesson!.id, note);
   }
 
   Future<void> onPositionChanged(int positionSec, int durationSec) async {

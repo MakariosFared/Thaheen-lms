@@ -1,135 +1,117 @@
-# 🩺 Thaheen LMS (ذهين - منصة التعليم الطبي)
+# Thaheen LMS — Mini Offline Learning App
 
-> **Mini Offline Learning Management System (LMS) with Video Player for Medical Students**  
-> Built with Flutter (Dart, Clean Architecture, BLoC/Cubit, Hive Offline Persistence & RTL Arabic-First UX).
-
----
-
-## 📱 نظرة عامة على المشروع (Project Overview)
-
-**ذهين (Thaheen)** هو تطبيق تعليمي مُوجّه لطلاب العلوم الطبية والتمريض في العالم العربي، يعمل **بالكامل بدون إنترنت (100% Offline)** عبر حزم البيانات والفيديوهات المدمجة داخل التطبيق (`assets/data/courses.json` و `assets/videos/`).
+A lightweight, offline-first mobile learning application tailored for health-sciences and medical students in Arabic. Built as part of the Thaheen Flutter screening task.
 
 ---
 
-## ✨ المميزات الرئيسية (Core Features)
+## 🛠️ Getting Started & How to Run
 
-### 1. 📚 شاشة المقررات التعليمية (Courses Screen)
-* **بطاقة استكمال المشاهدة (Continue Watching)**: تظهر تلقائياً في أعلى الشاشة عند وجود درس قيد المشاهدة لم يكتمل، مع شريط تقدم ونسبة مئوية دقيقة للانتقال المباشر للمشاهدة.
-* **قائمة المقررات**: عرض غلاف كل دورة، اسم المحاضر، عدد الدروس، إجمالي المدة، وشريط التقدم المئوي الإجمالي المحسوب من الدروس المكتملة.
-* **البحث الفوري (Bonus)**: فلترة سريعة للمقررات والمحاضرين بالاسم.
-* **الوضع الليلي والنهاري (Dark / Light Mode)**: دعم كامل للتبديل بين الوضعين مع حفظ التفضيل في التخزين المحلي.
+### Prerequisites
+- **Flutter SDK**: `^3.13.0` or newer (Tested on Flutter 3.27+ / Dart 3.6+)
+- **Target Platforms**: Android, iOS, Windows, macOS, or Web
 
-### 2. 📋 شاشة تفاصيل المقرر (Course Details Screen)
-* **عرض تفاعلي للأقسام (Collapsible Sections)**: أقسام المقرر قابلة للطي والفتح (`ExpansionTile`).
-* **حالات الدروس المتعددة**:
-  * ✅ **مكتمل (Completed)**: تم مشاهدة 90% أو أكثر من مدة الدرس.
-  * ⏳ **قيد المشاهدة (In Progress)**: بدأ الطالب مشاهدة الدرس ولم يكمل 90% بعد، مع عرض الدقائق/الثواني المشاهدة.
-  * ⚪ **لم يبدأ (Not Started)**: الدرس مفتوح ولكن لم يبدأ تشغيله.
-  * 🔒 **مقفول (Locked)**: الدرس مغلق وفقاً لقاعدة الفتح المتسلسل.
-* **الفتح المتسلسل (Sequential Unlock Rule)**: يتم قفل الدرس حتى يتم إكمال الدرس السابق له. النقر على درس مقفول يعرض نافذة توجيهية لطيفة تشرح الشرط بدون حدوث أي خطأ.
-
-### 3. 🎬 شاشة مشغل الفيديو (Lesson Player Screen)
-* **تشغيل محلي (Offline Asset Player)** بدون إنترنت وبأداء عالي.
-* **استئناف المشاهدة (Resume Playback)**: البدء تلقائياً من آخر موضع توقف عنده الطالب.
-* **قاعدة الإكمال التلقائي عند 90%**: بمجرد وصول المشاهدة إلى 90%، يتم اعتبار الدرس مكتملاً تلقائياً وحفظه في `Hive`، مع فتح الدرس التالي مباشرة وإظهار شارة إنجاز تفاعلية.
-* **التحكم في سرعة التشغيل (Playback Speed)**: خيارات `0.75x`, `1.0x`, `1.25x`, `1.5x`, `2.0x` مع حفظ السرعة المفضلة واسترجاعها تلقائياً للدروس التالية.
-* **زر الانتقال للدرس التالي (Next Lesson)**: يراعي قاعدة القفل المتسلسل ويتفعل بمجرد إكمال الدرس الحالي.
-* **أدوات تحكم متكاملة**: شريط تقديم وسحب (Seek bar) متوافق مع RTL، أزرار تقديم/ترجيع 10 ثوانٍ، ودعم وضع ملء الشاشة (Landscape / Fullscreen).
-* **معالجة الأخطاء (Error Handling)**: معالجة آمنة لملفات الفيديو التالفة أو غير الموجودة بدون أي شاشات حمراء.
-
-### 4. 🧪 اختبارات الجودة (Unit & Widget Tests)
-* **16 اختباراً شاملاً** تغطي:
-  1. قاعدة الإكمال التلقائي عند 90% وحالات الحافة (0 مدة، أرقام سالبة، نسب تقريبية).
-  2. قاعدة الفتح المتسلسل للدروس.
-  3. حساب النسبة المئوية لتقدم المقرر.
-  4. منطق إدارة الحالة (`CoursesCubit` و `CourseDetailsCubit`).
-  5. اختبار بناء الشاشات ودخان الواجهة (`Widget smoke test`).
-
----
-
-## 🏗️ الهيكلية والمعمارية (Architecture & Tech Stack)
-
-تم بناء المشروع باتباع **معمارية الطبقات المفصولة (Clean-Layered Architecture)** لضمان وضوح الكود وسهولة صيانته واختباره:
-
-```
-lib/
-├── application/           # إدارة الحالة (BLoC / Cubit)
-│   ├── course_details/    # CourseDetailsCubit + CourseDetailsState
-│   ├── courses/           # CoursesCubit + CoursesState
-│   ├── lesson_player/     # LessonPlayerCubit + LessonPlayerState
-│   └── theme/             # ThemeCubit (Light / Dark mode persistence)
-├── data/                  # طبقة البيانات ومصادر التخزين
-│   ├── models/            # CourseModel, SectionModel, LessonModel (JSON Parsing)
-│   └── repositories/      # CourseRepository (JSON Loading) + ProgressRepository (Hive)
-├── domain/                # منطق الأعمال النقي (Pure Dart)
-│   ├── entities/          # LessonProgress, LessonStatus
-│   └── utils/             # ProgressCalculator (90% rule, unlock rule, percentage math)
-├── presentation/          # واجهات المستخدم (UI & Widgets)
-│   ├── router/            # GoRouter Navigation (/ -> /course/:id -> /lesson/:id)
-│   ├── screens/           # CoursesScreen, CourseDetailsScreen, LessonPlayerScreen
-│   ├── theme/             # AppTheme (Light & Dark Themes, RTL Color Tokens)
-│   └── widgets/           # ContinueWatchingCard, CourseCard, LessonListItem
-└── main.dart              # تهيئة التطبيق ومزودي الخدمات (RepositoryProviders & BlocProviders)
-```
-
-### 💡 أسباب اختيار التقنيات (Design Decisions & Justification)
-
-1. **إدارة الحالة (State Management - Cubit)**:
-   * تم استخدام `Cubit` من حزمة `flutter_bloc` لسهولة قراءة تدفق البيانات، وإمكانية فصل الحسابات المعقدة كلياً عن شجرة الـ Widgets.
-   * **حل معضلة الـ Per-lesson state**: تم تقسيم الـ Cubits بحسب نطاق كل شاشة (`CourseDetailsCubit` لحساب قائمة وحالة دروس المقرر مرة واحدة وقت الـ emit، و `LessonPlayerCubit` للتحكم في موضع وتشغيل الدرس الفردي)، مع اعتماد `ProgressRepository` كمصدر وحيد للحقيقة (Single Source of Truth).
-
-2. **التخزين المحلي (Local Persistence - Hive)**:
-   * تم اختيار `Hive` بدلاً من `SharedPreferences` أو `sqflite` لكونه NoSQL Key-Value Store سريع جداً (Pure Dart)، ولا يحتاج Native bindings معقدة، ومناسب تماماً لتخزين كائنات `LessonProgress` المهيكلة JSON لكل `lessonId` بدون Overhead.
-
-3. **التوجيه والتنقل (Routing - GoRouter)**:
-   * تم استخدام `go_router` لإدارة المسارات عبر مسارات واضحة وقابلة للتمرير بالمعرفات: `/`, `/course/:id`, `/lesson/:id`.
-
-4. **تصميم عربي أصيل (Arabic-First & RTL)**:
-   * استخدام `Locale('ar')` افتراضياً، وتطبيق `EdgeInsetsDirectional`، ومحاذاة أشرطة التقدم والأيقونات لتناسب القراءة الطبيعية من اليمين لليسار.
-
----
-
-## 🚀 كيفية تشغيل التطبيق (How to Run)
-
-### المتطلبات:
-* Flutter SDK (3.13+ أو أحدث).
-* أي محاكي (Android / iOS) أو جهاز متصل أو Windows Desktop.
-
-### الخطوات:
+### Run Instructions
 ```bash
-# 1. تثبيت الحزم والمكتبات
+# 1. Fetch dependencies
 flutter pub get
 
-# 2. تشغيل الاختبارات للتأكد من سلامة منطق التقدم
+# 2. Run unit & widget tests
 flutter test
 
-# 3. تشغيل التطبيق
+# 3. Launch the app on your connected device / emulator
 flutter run
 ```
 
----
-
-## ⏱️ الوقت المستغرق (Time Spent)
-* **الوقت الإجمالي**: حوالي **4 ساعات و 30 دقيقة** توزعت بين:
-  * إعداد البيانات والـ Models و الـ Assets: ~45 دقيقة.
-  * الـ Domain Logic واختبارات الـ Unit Tests: ~45 دقيقة.
-  * الـ Cubits وتكامل الـ Hive: ~45 دقيقة.
-  * تصميم الشاشات وتجربة المشاهدة و الـ RTL: ~1.5 ساعة.
-  * التلميع والوضع الليلي والـ README: ~45 دقيقة.
+> **Note on Assets**: All courses data (`assets/data/courses.json`) and sample lesson videos (`assets/videos/*.mp4`) are bundled directly into the app. No network connection, emulator setup, or backend APIs are required.
 
 ---
 
-## ⚖️ المفاضلات والتطويرات المستقبلية (Trade-offs & Future Work)
+## 🏛️ Architecture & State Management Choices
 
-### المفاضلات (Trade-offs):
-* **Custom Video Controls**: تم بناء واجهة تحكم مخصصة كاملة للمشغل تضمن اتجاهات RTL مثالية للـ Slider بدلاً من الاعتماد الكلي على القوالب الجاهزة.
-* **Mocked JSON Data**: تم الاكتفاء بملف JSON داخلي يحتوي على فيديوهات حقيقية خفيفة (<10MB) لضمان العمل Offline بنسبة 100% دون الحاجة لأي Backend.
+### 1. Architectural Pattern (Layered Clean Architecture)
+I organized the codebase into four clean, decoupled layers to keep business logic isolated, testable, and maintainable:
 
-### ما يمكن إضافته مع مزيد من الوقت (With More Time):
-* 📝 **ملاحظات الدروس (Lesson Notes)**: إتاحة كتابة ملاحظات دراسية خاصة بكل درس وحفظها محلياً في Hive.
-* 🌐 **التبديل بين العربية والإنجليزية**: دعم تبديل لغة الواجهة ديناميكياً مع ملفات ARB.
-* 📊 **لوحة إحصائيات الطالب (Learning Analytics)**: رسوم بيانية لإجمالي الساعات المنجزة والشهادات الطبية بعد إكمال المقرر بنسبة 100%.
-* 🔔 **التذكير بالدراسة (Local Notifications)**: إرسال تنبيهات لتشجيع الطالب على استكمال الدروس غير المكتملة.
+- **`domain/`**: Contains pure Dart business entities (`LessonProgress`, `LessonStatus`) and calculation rules (`ProgressCalculator`). This layer has zero Flutter or framework dependencies, making unit testing straightforward and fast.
+- **`data/`**: Implements JSON loading (`CourseRepository`) and offline persistence (`ProgressRepository`).
+- **`application/`**: Houses Cubits and UI state models (`CoursesCubit`, `CourseDetailsCubit`, `LessonPlayerCubit`, `ThemeCubit`).
+- **`presentation/`**: Screens, custom video player widgets, theme tokens, and `go_router` navigation.
+
+### 2. Why Cubit (`flutter_bloc`)?
+- **Predictability & Less Boilerplate**: For this scope, `Cubit` provided the ideal balance between clean state separation and avoiding event boilerplate.
+- **Per-Lesson State Strategy**: Rather than having a monolithic app state that triggers unnecessary rebuilds whenever a video position updates, I decoupled the states:
+  - `CourseDetailsCubit` pre-computes the sequential unlock status and progress for all lessons once per screen view.
+  - `LessonPlayerCubit` manages isolated playback, speed, and real-time position updates for the active lesson only.
+  - `ProgressRepository` acts as the single source of truth across all screens.
+
+### 3. Why Hive for Local Storage?
+- **Speed & Simplicity**: Hive is a lightweight, pure Dart NoSQL key-value store. It stores structured JSON objects (`LessonProgress` with timestamp, position, duration, and completion status) without the heavy native binding overhead of SQLite or the type-limitation of `SharedPreferences`.
+- **Reliable Persistence**: User progress, completed lessons, last playback speed, and theme preferences seamlessly survive app restarts.
 
 ---
-**فريق التطوير**: تم التنفيذ بعناية فائقة وفق معايير الكود النظيف وجودة تجربة المستخدم. 🌟
+
+## 📐 Business Rules & Logic
+
+1. **90% Completion Rule**: A lesson is automatically marked as completed in storage as soon as the playback position reaches `90%` of its total duration (`positionSec / durationSec >= 0.9`).
+2. **Sequential Lesson Unlock**: The first lesson of any course is always unlocked. Any subsequent lesson remains locked until the immediately preceding lesson is completed.
+3. **Course Progress Calculation**: Dynamically computed as `(completedLessons / totalLessons) * 100`, handling empty courses safely (returning `0.0%`).
+4. **Per-Lesson Notes (Bonus Feature)**: A local study notes editor saved in Hive per `lessonId`, with one-tap video timestamp insertion (`[01:15]`) and auto-saving.
+5. **Continue Watching**: When returning to the home screen, the app detects the most recent unfinished lesson and displays a quick-resume banner.
+
+---
+
+## 🧪 Testing
+
+The repository includes **16 automated tests** covering both business rules and UI smoke tests:
+- **`test/progress_logic_test.dart`**: Tests the 90% completion rule, sequential unlock edge cases, progress % math, and status evaluation.
+- **`test/cubits_test.dart`**: Tests state transitions for `CoursesCubit` and `CourseDetailsCubit` using `bloc_test` and `mocktail`.
+- **`test/widget_test.dart`**: Tests app startup and widget rendering.
+
+Run all tests:
+```bash
+flutter test
+```
+
+---
+
+## ⚖️ Trade-offs & Known Issues
+
+1. **Custom Video Player UI vs Default Controls**:
+   Instead of default player styling, I built custom controls on top of `video_player` to ensure seamless RTL slider interaction, custom 10-second forward/backward skips, integrated speed control, and Arabic-first tooltips.
+2. **Local Assets vs Real Streaming**:
+   To strictly fulfill the offline requirement without external network dependencies, 3 small royalty-free MP4 files (< 6MB each) are bundled in `assets/videos/`. In a production setup, this would connect to an HLS/DASH streaming server (e.g., Mux / Cloudflare Stream) with offline caching.
+3. **Fullscreen Orientation**:
+   Landscape orientation is triggered via `SystemChrome.setPreferredOrientations`. On some desktop/web window resizes, the player retains aspect ratio within its frame.
+
+---
+
+## ⏳ What I'd Build With More Time
+
+If I had more time to expand this project further:
+- 🌐 **Language Toggle (EN / AR)**: Adding an explicit dynamic language switcher using `intl` / `.arb` localization files.
+- 📊 **Study Analytics**: Visual charts showing total hours studied, completion rate trends, and weekly streaks.
+- 🔖 **Interactive Quizzes**: Short self-assessment quizzes at the end of each section before unlocking the next milestone.
+- 📥 **Offline Download Manager**: Background downloading and storage management for high-res medical videos.
+
+---
+
+## ⏱️ Time Spent
+
+Total time spent: **~5 hours**
+- **Architecture, Models & Data Layer**: ~45 mins
+- **Domain Logic & Unit Tests**: ~45 mins
+- **State Management (Cubits & Hive Integration)**: ~45 mins
+- **UI, RTL Layout & Custom Video Player**: ~1.5 hours
+- **Theme (Dark Mode), Search & Refinements**: ~45 mins
+- **Review, Testing & Documentation**: ~30 mins
+
+---
+
+## 📹 Demo & Screen Recording
+
+> A 2–3 minute video demonstration showing:
+> 1. Course browsing & real-time search.
+> 2. Light / Dark mode switching.
+> 3. Locked lesson dialog interaction.
+> 4. Video playback with speed changing (1x to 2x) and 10s seeking.
+> 5. 90% auto-completion triggering the green badge and unlocking the "Next Lesson" button.
+> 6. App restart demonstrating progress persistence and the "Continue Watching" banner.

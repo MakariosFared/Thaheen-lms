@@ -22,23 +22,28 @@ abstract class IProgressRepository {
   Future<void> saveLastPlaybackSpeed(double speed);
   Future<bool> getIsDarkMode();
   Future<void> saveIsDarkMode(bool isDark);
+  Future<String?> getLessonNote(String lessonId);
+  Future<void> saveLessonNote(String lessonId, String note);
   Future<void> clearAll();
 }
 
 class ProgressRepository implements IProgressRepository {
   static const String progressBoxName = 'lesson_progress_box';
   static const String settingsBoxName = 'app_settings_box';
+  static const String notesBoxName = 'lesson_notes_box';
   static const String keyLastPlaybackSpeed = 'last_playback_speed';
   static const String keyIsDarkMode = 'is_dark_mode';
 
   Box<String>? _progressBox;
   Box<dynamic>? _settingsBox;
+  Box<String>? _notesBox;
 
   @override
   Future<void> init() async {
     await Hive.initFlutter();
     _progressBox = await Hive.openBox<String>(progressBoxName);
     _settingsBox = await Hive.openBox<dynamic>(settingsBoxName);
+    _notesBox = await Hive.openBox<String>(notesBoxName);
   }
 
   Box<String> get progressBox {
@@ -53,6 +58,13 @@ class ProgressRepository implements IProgressRepository {
       throw StateError('ProgressRepository not initialized. Call init() first.');
     }
     return _settingsBox!;
+  }
+
+  Box<String> get notesBox {
+    if (_notesBox == null || !_notesBox!.isOpen) {
+      throw StateError('ProgressRepository not initialized. Call init() first.');
+    }
+    return _notesBox!;
   }
 
   @override
@@ -175,8 +187,23 @@ class ProgressRepository implements IProgressRepository {
   }
 
   @override
+  Future<String?> getLessonNote(String lessonId) async {
+    return notesBox.get(lessonId);
+  }
+
+  @override
+  Future<void> saveLessonNote(String lessonId, String note) async {
+    if (note.trim().isEmpty) {
+      await notesBox.delete(lessonId);
+    } else {
+      await notesBox.put(lessonId, note);
+    }
+  }
+
+  @override
   Future<void> clearAll() async {
     await progressBox.clear();
     await settingsBox.clear();
+    await notesBox.clear();
   }
 }

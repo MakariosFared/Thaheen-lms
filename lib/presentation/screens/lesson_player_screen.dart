@@ -46,11 +46,17 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
   String? _videoErrorMessage;
   bool _showControls = true;
   Timer? _hideControlsTimer;
+  Timer? _noteDebounceTimer;
   bool _isFullscreen = false;
+  final TextEditingController _noteController = TextEditingController();
+  bool _isNoteInitialized = false;
+  bool _isNoteSaved = true;
 
   @override
   void dispose() {
     _hideControlsTimer?.cancel();
+    _noteDebounceTimer?.cancel();
+    _noteController.dispose();
     _controller?.removeListener(_videoListener);
     _controller?.dispose();
     if (_isFullscreen) {
@@ -186,6 +192,41 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
     return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
+  void _insertCurrentTimestamp() {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+    final pos = _controller!.value.position;
+    final timeStr = '⏱️ [${_formatDuration(pos)}] ';
+    final currentText = _noteController.text;
+    final selection = _noteController.selection;
+
+    if (selection.isValid && selection.start >= 0) {
+      final newText = currentText.replaceRange(selection.start, selection.end, timeStr);
+      _noteController.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: selection.start + timeStr.length),
+      );
+    } else {
+      _noteController.text = '$currentText$timeStr';
+      _noteController.selection = TextSelection.collapsed(offset: _noteController.text.length);
+    }
+    _onNoteChanged(_noteController.text);
+  }
+
+  void _onNoteChanged(String text) {
+    setState(() {
+      _isNoteSaved = false;
+    });
+    _noteDebounceTimer?.cancel();
+    _noteDebounceTimer = Timer(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        context.read<LessonPlayerCubit>().saveNote(text);
+        setState(() {
+          _isNoteSaved = true;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -197,6 +238,10 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
         listener: (context, state) {
           if (state.status == PlayerStatus.ready && !_isControllerInitialized && !_hasVideoError) {
             _setupController(state);
+          }
+          if (state.status == PlayerStatus.ready && !_isNoteInitialized) {
+            _noteController.text = state.note;
+            _isNoteInitialized = true;
           }
         },
         builder: (context, state) {
@@ -509,7 +554,119 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
+
+                      // Study Notes Card (Bonus Feature)
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryLight,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit_note_rounded,
+                                    color: AppColors.primary,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Text(
+                                    'ملاحظاتي الدراسية للدرس',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      _isNoteSaved
+                                          ? Icons.cloud_done_rounded
+                                          : Icons.cloud_upload_outlined,
+                                      size: 16,
+                                      color: _isNoteSaved ? AppColors.success : AppColors.warning,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      _isNoteSaved ? 'محفوظ محلياً' : 'جاري الحفظ...',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: _isNoteSaved ? AppColors.success : AppColors.warning,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _noteController,
+                              onChanged: _onNoteChanged,
+                              maxLines: 4,
+                              style: TextStyle(
+                                fontSize: 13,
+                                height: 1.5,
+                                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'اكتب تلخيصك أو النقاط المهمة أثناء الاستماع للمحاضرة...',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                ),
+                                filled: true,
+                                fillColor: isDark ? AppColors.surfaceVariantDark : AppColors.surfaceVariantLight,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.all(12),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Align(
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppColors.primary,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color: AppColors.primary.withValues(alpha: 0.3),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: _insertCurrentTimestamp,
+                                icon: const Icon(Icons.timer_outlined, size: 16),
+                                label: const Text(
+                                  'إدراج توقيت الفيديو الحالي',
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
 
                       // Next Lesson Card / Action
                       if (nextLesson != null) ...[

@@ -24,6 +24,7 @@ class LessonPlayerState extends Equatable {
   final bool isCompleted;
   final bool isNextLessonUnlocked;
   final String? errorMessage;
+  final String note;
 
   const LessonPlayerState({
     this.status = PlayerStatus.initial,
@@ -39,6 +40,7 @@ class LessonPlayerState extends Equatable {
     this.isCompleted = false,
     this.isNextLessonUnlocked = false,
     this.errorMessage,
+    this.note = '',
   });
 
   LessonPlayerState copyWith({
@@ -55,6 +57,7 @@ class LessonPlayerState extends Equatable {
     bool? isCompleted,
     bool? isNextLessonUnlocked,
     String? errorMessage,
+    String? note,
   }) {
     return LessonPlayerState(
       status: status ?? this.status,
@@ -70,6 +73,7 @@ class LessonPlayerState extends Equatable {
       isCompleted: isCompleted ?? this.isCompleted,
       isNextLessonUnlocked: isNextLessonUnlocked ?? this.isNextLessonUnlocked,
       errorMessage: errorMessage ?? this.errorMessage,
+      note: note ?? this.note,
     );
   }
 
@@ -93,5 +97,6 @@ class LessonPlayerState extends Equatable {
         isCompleted,
         isNextLessonUnlocked,
         errorMessage,
+        note,
       ];
 }
