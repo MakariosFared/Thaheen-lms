@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../data/repositories/progress_repository.dart';
 
 class ThemeCubit extends Cubit<ThemeMode> {
   final IProgressRepository? _progressRepository;
-
-  ThemeCubit({
-    IProgressRepository? progressRepository,
-    bool initialIsDark = false,
-  })  : _progressRepository = progressRepository,
-        super(initialIsDark ? ThemeMode.dark : ThemeMode.light);
+  
+  ThemeCubit({this._progressRepository, bool initialIsDark = false})
+    : super(initialIsDark ? ThemeMode.dark : ThemeMode.light);
 
   void toggleTheme() {
-    final nextMode = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    final nextMode = state == ThemeMode.light
+        ? ThemeMode.dark
+        : ThemeMode.light;
     emit(nextMode);
     _progressRepository?.saveIsDarkMode(nextMode == ThemeMode.dark);
   }
