@@ -33,6 +33,6 @@ void main() {
       progressRepository: mockProgressRepo,
     ));
 
-    expect(find.text('ذهين للعلوم الطبية'), findsOneWidget);
+    expect(find.text('منصة تعليمية'), findsOneWidget);
   });
 }

@@ -9,6 +9,7 @@ import '../../application/lesson_player/lesson_player_state.dart';
 import '../../data/repositories/course_repository.dart';
 import '../../data/repositories/progress_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/celebration_dialog.dart';
 
 class LessonPlayerScreen extends StatelessWidget {
   final String lessonId;
@@ -51,6 +52,8 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
   final TextEditingController _noteController = TextEditingController();
   bool _isNoteInitialized = false;
   bool _isNoteSaved = true;
+  bool _hasShownCelebration = false;
+  bool _initialCompletedSet = false;
 
   @override
   void dispose() {
@@ -261,12 +264,33 @@ class _LessonPlayerViewState extends State<_LessonPlayerView> {
         backgroundColor: _isFullscreen ? Colors.black : theme.scaffoldBackgroundColor,
         body: BlocConsumer<LessonPlayerCubit, LessonPlayerState>(
         listener: (context, state) {
-          if (state.status == PlayerStatus.ready && !_isControllerInitialized && !_hasVideoError) {
-            _setupController(state);
-          }
-          if (state.status == PlayerStatus.ready && !_isNoteInitialized) {
-            _noteController.text = state.note;
-            _isNoteInitialized = true;
+          if (state.status == PlayerStatus.ready) {
+            if (!_isControllerInitialized && !_hasVideoError) {
+              _setupController(state);
+            }
+            if (!_isNoteInitialized) {
+              _noteController.text = state.note;
+              _isNoteInitialized = true;
+            }
+            if (!_initialCompletedSet) {
+              _initialCompletedSet = true;
+              if (state.isCompleted) {
+                _hasShownCelebration = true;
+              }
+            } else if (state.isCompleted && !_hasShownCelebration) {
+              _hasShownCelebration = true;
+              final nextLesson = state.nextLesson;
+              CelebrationDialog.show(
+                context: context,
+                lessonTitle: state.lesson?.title ?? '',
+                nextLessonTitle: nextLesson?.title,
+                onNextLesson: nextLesson != null
+                    ? () {
+                        context.pushReplacement('/lesson/${nextLesson.id}');
+                      }
+                    : null,
+              );
+            }
           }
         },
         builder: (context, state) {

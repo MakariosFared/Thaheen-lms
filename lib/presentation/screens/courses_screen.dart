@@ -62,7 +62,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
             ),
             const SizedBox(width: 10),
             const Text(
-              'ذهين للعلوم الطبية',
+              'منصة تعليمية',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -244,15 +244,30 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     ),
                   ] else ...[
                     // Courses List
-                    for (final item in filteredCourses)
-                      CourseCard(
-                        item: item,
-                        onTap: () async {
-                          await context.push('/course/${item.course.id}');
-                          if (context.mounted) {
-                            context.read<CoursesCubit>().refreshProgress();
-                          }
+                    for (int i = 0; i < filteredCourses.length; i++)
+                      TweenAnimationBuilder<double>(
+                        key: ValueKey(filteredCourses[i].course.id),
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        duration: Duration(milliseconds: 350 + (i * 120)),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: Transform.translate(
+                              offset: Offset(0, 20 * (1 - value)),
+                              child: child,
+                            ),
+                          );
                         },
+                        child: CourseCard(
+                          item: filteredCourses[i],
+                          onTap: () async {
+                            await context.push('/course/${filteredCourses[i].course.id}');
+                            if (context.mounted) {
+                              context.read<CoursesCubit>().refreshProgress();
+                            }
+                          },
+                        ),
                       ),
                   ],
                 ],

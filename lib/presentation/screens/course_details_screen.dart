@@ -261,28 +261,42 @@ class _CourseDetailsView extends StatelessWidget {
                                     'إجمالي تقدم الدورة',
                                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                   ),
-                                  Text(
-                                    '${progress.toStringAsFixed(0)}%',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: isCompleted ? AppColors.success : AppColors.primary,
-                                    ),
+                                  TweenAnimationBuilder<double>(
+                                    tween: Tween<double>(begin: 0.0, end: progress),
+                                    duration: const Duration(milliseconds: 600),
+                                    curve: Curves.easeOutCubic,
+                                    builder: (context, animVal, _) {
+                                      return Text(
+                                        '${animVal.toStringAsFixed(0)}%',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: isCompleted ? AppColors.success : AppColors.primary,
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 10),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(6),
-                                child: LinearProgressIndicator(
-                                  value: progress / 100,
-                                  minHeight: 8,
-                                  backgroundColor: isDark
-                                      ? AppColors.surfaceVariantDark
-                                      : AppColors.surfaceVariantLight,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    isCompleted ? AppColors.success : AppColors.primary,
-                                  ),
+                                child: TweenAnimationBuilder<double>(
+                                  tween: Tween<double>(begin: 0.0, end: progress / 100),
+                                  duration: const Duration(milliseconds: 600),
+                                  curve: Curves.easeOutCubic,
+                                  builder: (context, animVal, _) {
+                                    return LinearProgressIndicator(
+                                      value: animVal,
+                                      minHeight: 8,
+                                      backgroundColor: isDark
+                                          ? AppColors.surfaceVariantDark
+                                          : AppColors.surfaceVariantLight,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        isCompleted ? AppColors.success : AppColors.primary,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],
