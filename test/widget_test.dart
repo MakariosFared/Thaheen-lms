@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mocktail/mocktail.dart';
+import 'package:thaheen_lms/data/models/course_model.dart';
+import 'package:thaheen_lms/data/repositories/course_repository.dart';
+import 'package:thaheen_lms/data/repositories/progress_repository.dart';
 import 'package:thaheen_lms/main.dart';
 
+class MockCourseRepository extends Mock implements ICourseRepository {}
+
+class MockProgressRepository extends Mock implements IProgressRepository {}
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  late MockCourseRepository mockCourseRepo;
+  late MockProgressRepository mockProgressRepo;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() {
+    mockCourseRepo = MockCourseRepository();
+    mockProgressRepo = MockProgressRepository();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    when(() => mockCourseRepo.getCourses())
+        .thenAnswer((_) async => <CourseModel>[]);
+    when(() => mockProgressRepo.getAllProgress())
+        .thenAnswer((_) async => {});
+    when(() => mockProgressRepo.getLatestInProgressLesson())
+        .thenAnswer((_) async => null);
+    when(() => mockProgressRepo.getIsDarkMode())
+        .thenAnswer((_) async => false);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('App renders without crashing', (WidgetTester tester) async {
+    await tester.pumpWidget(MyApp(
+      courseRepository: mockCourseRepo,
+      progressRepository: mockProgressRepo,
+    ));
+
+    expect(find.text('ذهين للعلوم الطبية'), findsOneWidget);
   });
 }
